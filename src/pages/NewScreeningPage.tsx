@@ -7,10 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { 
-  FileText, 
-  Upload, 
-  X, 
+import {
+  FileText,
+  Upload,
+  X,
   Sparkles,
   HelpCircle,
   Lightbulb,
@@ -37,13 +37,13 @@ interface ResumeFile {
 export default function NewScreeningPage() {
   const navigate = useNavigate();
   const { createScreening } = useScreenings();
-  
+
   // Form state
   const [title, setTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
-  
+
   // Upload state
   const [uploadedFiles, setUploadedFiles] = useState<ResumeFile[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -57,13 +57,13 @@ export default function NewScreeningPage() {
     if (!files) return;
 
     const newFiles: ResumeFile[] = [];
-    
+
     for (const file of Array.from(files)) {
       if (file.type !== 'application/pdf') {
         toast.error(`${file.name} is not a PDF file`);
         continue;
       }
-      
+
       if (file.size > maxFileSize) {
         toast.error(`${file.name} exceeds 10MB limit`);
         continue;
@@ -184,7 +184,7 @@ export default function NewScreeningPage() {
 
       // Move uploaded files to proper location and create candidates
       const completedFiles = uploadedFiles.filter(f => f.status === 'completed' && f.path);
-      
+
       for (const file of completedFiles) {
         try {
           const { data: { user } } = await supabase.auth.getUser();
@@ -192,7 +192,7 @@ export default function NewScreeningPage() {
 
           // Move file from temp to proper location
           const newPath = `${user.id}/${screening.id}/${Date.now()}_${file.name}`;
-          
+
           const { error: moveError } = await supabase.storage
             .from('resumes')
             .move(file.path, newPath);
@@ -210,14 +210,14 @@ export default function NewScreeningPage() {
             resume_url: publicUrl,
             resume_filename: file.name,
             status: 'new',
-          } as any);
+          });
         } catch (err) {
           console.error('Error processing file:', err);
         }
       }
 
       toast.success('Screening created successfully!');
-      
+
       // Navigate to the screening page
       navigate(`/screening/${screening.id}`);
     } catch (err) {
@@ -234,10 +234,10 @@ export default function NewScreeningPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col">
         <Header />
-        
+
         <main className="flex-1 p-8 overflow-auto">
           {/* Page Header */}
           <div className="max-w-4xl mx-auto mb-8">
@@ -404,8 +404,8 @@ export default function NewScreeningPage() {
                     </span>
                   </div>
 
-                  <Progress 
-                    value={(uploadedFiles.filter(f => f.status === 'completed').length / maxFiles) * 100} 
+                  <Progress
+                    value={(uploadedFiles.filter(f => f.status === 'completed').length / maxFiles) * 100}
                     className="mb-4"
                   />
 
@@ -415,10 +415,9 @@ export default function NewScreeningPage() {
                         key={file.id}
                         className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
                       >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          file.status === 'error' ? 'bg-red-100' : 
-                          file.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'
-                        }`}>
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${file.status === 'error' ? 'bg-red-100' :
+                            file.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'
+                          }`}>
                           {file.status === 'error' ? (
                             <AlertCircle className="w-5 h-5 text-red-600" />
                           ) : file.status === 'completed' ? (
@@ -462,14 +461,14 @@ export default function NewScreeningPage() {
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => navigate('/dashboard')}
                 disabled={isCreating}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 className="bg-blue-600 hover:bg-blue-700 px-8"
                 onClick={handleCreateScreening}
                 disabled={isCreating || uploadingCount > 0}

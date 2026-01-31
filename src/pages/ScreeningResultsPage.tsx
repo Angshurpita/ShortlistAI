@@ -5,8 +5,8 @@ import { Header } from '@/sections/dashboard/Header';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Download, 
+import {
+  Download,
   Filter,
   ArrowUpDown,
   RefreshCw,
@@ -26,7 +26,7 @@ export default function ScreeningResultsPage() {
   const { id } = useParams<{ id: string }>();
   const { screening, loading: screeningLoading, error: screeningError } = useScreening(id);
   const { candidates, loading: candidatesLoading, updateCandidateStatus } = useCandidates(id);
-  
+
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -37,16 +37,17 @@ export default function ScreeningResultsPage() {
 
   const handleAnalyze = async () => {
     if (!id) return;
-    
+
     setIsAnalyzing(true);
-    
+
     try {
       // TODO: Call AI analysis API
       // For now, simulate analysis
       await new Promise(resolve => setTimeout(resolve, 3000));
-      
+
       toast.success('Analysis completed!');
     } catch (err) {
+      console.error(err);
       toast.error('Analysis failed. Please try again.');
     } finally {
       setIsAnalyzing(false);
@@ -58,6 +59,7 @@ export default function ScreeningResultsPage() {
       await updateCandidateStatus(candidateId, status);
       toast.success(`Candidate marked as ${status}`);
     } catch (err) {
+      console.error(err);
       toast.error('Failed to update status');
     }
   };
@@ -120,10 +122,10 @@ export default function ScreeningResultsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col">
         <Header />
-        
+
         <main className="flex-1 p-8 overflow-auto">
           {/* Breadcrumb & Header */}
           <div className="mb-8">
@@ -149,7 +151,7 @@ export default function ScreeningResultsPage() {
                   <Download className="w-4 h-4" />
                   Export
                 </Button>
-                <Button 
+                <Button
                   className="bg-blue-600 hover:bg-blue-700 gap-2"
                   onClick={handleAnalyze}
                   disabled={isAnalyzing || candidates.length === 0}
@@ -245,9 +247,8 @@ export default function ScreeningResultsPage() {
                       <div
                         key={candidate.id}
                         onClick={() => setSelectedCandidate(candidate)}
-                        className={`grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          selectedCandidate?.id === candidate.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
-                        }`}
+                        className={`grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${selectedCandidate?.id === candidate.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                          }`}
                       >
                         <div className="col-span-5 flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium flex-shrink-0">
@@ -380,21 +381,21 @@ export default function ScreeningResultsPage() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-gray-100">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="flex-1"
                         onClick={() => handleStatusChange(selectedCandidate.id, 'reject')}
                       >
                         Reject
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="flex-1"
                         onClick={() => handleStatusChange(selectedCandidate.id, 'maybe')}
                       >
                         Maybe
                       </Button>
-                      <Button 
+                      <Button
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                         onClick={() => handleStatusChange(selectedCandidate.id, 'hire')}
                       >

@@ -50,7 +50,7 @@ export function useCandidates(screeningId: string | undefined) {
         screening_id: screeningId,
         ...candidateData,
         status: 'new',
-      } as any)
+      })
       .select()
       .single();
 
@@ -63,7 +63,7 @@ export function useCandidates(screeningId: string | undefined) {
   const updateCandidate = async (id: string, updates: Partial<Candidate>) => {
     const { error } = await supabase
       .from('candidates')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id);
 
     if (error) throw error;

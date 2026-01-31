@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
@@ -20,6 +21,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (data && !error) {
+      setProfile(data as UserProfile);
+    }
+  };
 
   useEffect(() => {
     // Get initial session
@@ -49,18 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    if (data && !error) {
-      setProfile(data as UserProfile);
-    }
-  };
-
   const signInWithOtp = async (email: string) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -83,14 +84,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      profile, 
-      loading, 
-      signInWithOtp, 
+    <AuthContext.Provider value={{
+      user,
+      session,
+      profile,
+      loading,
+      signInWithOtp,
       signOut,
-      refreshProfile 
+      refreshProfile
     }}>
       {children}
     </AuthContext.Provider>

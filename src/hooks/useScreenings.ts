@@ -53,7 +53,7 @@ export function useScreenings() {
         status: 'draft',
         total_candidates: 0,
         processed_candidates: 0,
-      } as any)
+      })
       .select()
       .single();
 
@@ -66,7 +66,7 @@ export function useScreenings() {
   const updateScreening = async (id: string, updates: Partial<Screening>) => {
     const { error } = await supabase
       .from('screenings')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id);
 
     if (error) throw error;
